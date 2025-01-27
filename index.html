@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Sajid's Notes App</title>
+    <h1>ℌ𝔢𝔩𝔩𝔬 𝔱𝔥𝔢𝔯𝔢</h1>
+    <style>
+        .notes-app {
+            max-width: 800px;
+            margin: 50px auto;
+            padding: 20px;
+        }
+        #noteInput {
+            width: 100%;
+            height: 100px;
+            padding: 10px;
+            margin-bottom: 10px;
+            font-size: 16px;
+        }
+        .notes-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 10px;
+        }
+        .note {
+            background: #fff3d0;
+            padding: 15px;
+            border-radius: 5px;
+            position: relative;
+            min-height: 100px;
+        }
+        .delete-btn {
+            position: absolute;
+            top: 5px;
+            right: 5px;
+            background: #ff4444;
+            color: white;
+            border: none;
+            border-radius: 50%;
+            cursor: pointer;
+            width: 24px;
+            height: 24px;
+        }
+    </style>
+</head>
+<body>
+    <div class="notes-app">
+        <textarea id="noteInput" placeholder="Enter your note..."></textarea>
+        <button onclick="addNote()" style="padding: 10px 20px; margin-bottom: 20px;">Add Note</button>
+        <div class="notes-grid" id="notesContainer"></div>
+    </div>
+
+    <script>
+        // Load notes from localStorage
+        let notes = JSON.parse(localStorage.getItem('notes')) || [];
+        
+        function saveNotes() {
+            localStorage.setItem('notes', JSON.stringify(notes));
+        }
+
+        function addNote() {
+            const noteInput = document.getElementById('noteInput');
+            const text = noteInput.value.trim();
+            
+            if (text) {
+                const note = {
+                    id: Date.now(),
+                    text: text,
+                    date: new Date().toLocaleString()
+                };
+                
+                notes.push(note);
+                saveNotes();
+                renderNotes();
+                noteInput.value = '';
+            }
+        }
+
+        function deleteNote(id) {
+            notes = notes.filter(note => note.id !== id);
+            saveNotes();
+            renderNotes();
+        }
+
+        function renderNotes() {
+            const container = document.getElementById('notesContainer');
+            container.innerHTML = notes.map(note => `
+                <div class="note">
+                    <button class="delete-btn" onclick="deleteNote(${note.id})">×</button>
+                    <div>${note.text}</div>
+                    <div style="margin-top: 10px; font-size: 0.8em; color: #666">${note.date}</div>
+                </div>
+            `).join('');
+        }
+
+        // Initial render
+        renderNotes();
+    </script>
+</body>
+</html>
